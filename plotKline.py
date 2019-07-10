@@ -1,5 +1,6 @@
 from jqdatasdk import *
 import pyecharts.options as opts
+import datetime
 from pyecharts.charts import Kline,Page,Line
 
 auth('13917211596','910722mu')
@@ -51,8 +52,9 @@ def getSingleCandlestick(stock_id, end_date, interval):
   page.add(kline)
 
 
-def plotCandlesticks(research_id, start_date, end_date, benchmark_id, b_start_date, b_end_date, interval):
+def plotCandlesticks(research_id, end_date, benchmark_id, b_end_date, interval):
   getSingleCandlestick(research_id,end_date, interval)
-  getSingleCandlestick(benchmark_id,b_end_date, interval)
+  b_end = b_end_date + datetime.timedelta(days=interval)
+  getSingleCandlestick(benchmark_id,b_end, interval*2)
   page.render()
 
