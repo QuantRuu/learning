@@ -30,7 +30,7 @@ def find_largest_corr(research_sid,end_date,scan_first_end_date,scan_last_end_da
     max_corr_end = ""
     # 创建一个空的Dataframe
     result = pd.DataFrame(columns=('sid', 'name', 'start', 'end', 'corr'))
-    for i in stock_info[0:10]:
+    for i in stock_info[0:1]:
         each_corr = 0
         each_start = ""
         each_end = ""
