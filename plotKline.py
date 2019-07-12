@@ -18,7 +18,7 @@ def show_kline_data(params):
     return "date = " + param.name + "<br/>" + "cci = " + param.value + "<br/>"
 
 
-def getSingleCandlestick(stock_id, end_date, interval, type=1):
+def getSingleCandlestick(stock_id, end_date, interval):
   # get stock trade info from jqdata
   stock_info = get_security_info(stock_id)
   data = get_price(stock_id, count=interval, end_date=end_date, frequency='1d', fields=['open','high','low','close','volume'])
@@ -34,6 +34,12 @@ def getSingleCandlestick(stock_id, end_date, interval, type=1):
   kline.add_yaxis(
     '日线',
     price,
+    markpoint_opts=opts.MarkPointOpts(
+      data=[opts.MarkPointItem(name="endpoint",coord=[x_list[len(x_list)-interval-1],price[len(x_list)-interval-1]],value=price[len(x_list)-interval-1])]
+    ),
+    markline_opts=opts.MarkLineOpts(
+      data=[opts.MarkLineItem(type_="max", value_dim="close")]
+    ),
     # itemstyle_opts=opts.ItemStyleOpts(
     #   color="#FF6347",
     #   color0="#BCEE68",
@@ -49,9 +55,11 @@ def getSingleCandlestick(stock_id, end_date, interval, type=1):
               is_show=True, areastyle_opts=opts.AreaStyleOpts(opacity=1)
           ),
       ),
+      datazoom_opts=[opts.DataZoomOpts(pos_bottom="-2%"),opts.DataZoomOpts(xaxis_index=[0,1],type_="inside")],
       title_opts=opts.TitleOpts(title=stock_id + "-" + stock_info.display_name),
       legend_opts=opts.LegendOpts(is_show=False),
   )
+  
 
   volume = list(data['volume'])
   bar = Bar()
@@ -60,8 +68,9 @@ def getSingleCandlestick(stock_id, end_date, interval, type=1):
   bar.set_global_opts(
     yaxis_opts=opts.AxisOpts(split_number=3),
     legend_opts=opts.LegendOpts(is_show=False),
-    datazoom_opts=[opts.DataZoomOpts(pos_bottom="-2%"),opts.DataZoomOpts(xaxis_index=[0,1],type_="inside")],
-  ).set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+  ).set_series_opts(
+    label_opts=opts.LabelOpts(is_show=False),
+  )
 
   grid = Grid(init_opts=opts.InitOpts(theme=ThemeType.WESTEROS))
   grid.add(kline,grid_opts=opts.GridOpts(pos_bottom="28%"))
@@ -72,6 +81,6 @@ def getSingleCandlestick(stock_id, end_date, interval, type=1):
 def plotCandlesticks(research_id, end_date, benchmark_id, b_end_date, interval):
   getSingleCandlestick(research_id,end_date, interval)
   b_end = b_end_date + datetime.timedelta(days=interval)
-  getSingleCandlestick(benchmark_id,b_end, interval, type=2)
+  getSingleCandlestick(benchmark_id,b_end, interval*2)
   page.render()
 
